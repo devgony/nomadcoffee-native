@@ -1,23 +1,33 @@
-import { StatusBar } from "expo-status-bar";
+import TabNav from "./navigators/TabNav";
+import { AppearanceProvider } from "react-native-appearance";
+import { NavigationContainer } from "@react-navigation/native";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
 import { Asset } from "expo-asset";
-import { Image } from "react-native";
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import client, { isLoggedInVar, tokenVar } from "./apollo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [loading, setLoading] = useState(true);
   const onFinish = () => setLoading(false);
-  const preload = async () => {
+  const preloadAssets = async () => {
     const fontsToLoad = [Ionicons.font];
     const fontPromises = fontsToLoad.map(font => Font.loadAsync(font));
-    console.log(fontPromises);
     const imagesToLoad = [require("./assets/cat.gif")];
     const imagePromises = imagesToLoad.map(image => Asset.loadAsync(image));
-    console.log(imagePromises);
     Promise.all<void | Asset[]>([...fontPromises, ...imagePromises]);
+  };
+  const preload = async () => {
+    const token = await AsyncStorage.getItem("token");
+    if (token) {
+      isLoggedInVar(true);
+      tokenVar(token);
+    }
+    return preloadAssets();
   };
   if (loading) {
     return (
@@ -29,20 +39,12 @@ export default function App() {
     );
   }
   return (
-    <View style={styles.container}>
-      <Ionicons name="home" size={50} />
-      <Image resizeMode="contain" source={require("./assets/cat.gif")} />
-      <Text>Preloaded well!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ApolloProvider client={client}>
+      <AppearanceProvider>
+        <NavigationContainer>
+          <TabNav isLoggedIn={isLoggedIn} />
+        </NavigationContainer>
+      </AppearanceProvider>
+    </ApolloProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
