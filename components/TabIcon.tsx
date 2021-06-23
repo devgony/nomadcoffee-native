@@ -1,9 +1,8 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { ICons } from "../types/icons";
 
 interface ITabIcon {
-  iconName: ICons;
+  iconName: keyof typeof Ionicons.glyphMap;
   color: string;
   focused: boolean;
 }
@@ -11,7 +10,9 @@ interface ITabIcon {
 export default function TabIcon({ iconName, color, focused }: ITabIcon) {
   return (
     <Ionicons
-      name={focused ? iconName : (`${iconName}-outline` as ICons)}
+      name={
+        focused ? iconName : (`${iconName}-outline` as ITabIcon["iconName"])
+      }
       color={color}
       size={22}
     />

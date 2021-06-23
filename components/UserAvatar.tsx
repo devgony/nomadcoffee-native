@@ -3,25 +3,27 @@ import { ImageResizeMode, ImageSourcePropType } from "react-native";
 import styled from "styled-components/native";
 import React from "react";
 
-const RADIUS = "60px";
+const RADIUS = "50px";
+const BORDER_RADIUS = "25px";
 
 const Layout = styled.View`
   flex-direction: row;
   align-items: center;
+  margin: 10px 0;
 `;
 
 export const SUserAvatar = styled.Image`
   margin-right: 10px;
   width: ${RADIUS};
   height: ${RADIUS};
-  border-radius: 40px;
+  border-radius: ${BORDER_RADIUS};
 `;
 
 export const SDefaultAvatar = styled.View`
   margin-right: 10px;
   width: ${RADIUS};
   height: ${RADIUS};
-  border-radius: 40px;
+  border-radius: ${BORDER_RADIUS};
   background-color: lightgray;
   align-items: center;
   justify-content: center;
@@ -39,7 +41,7 @@ interface IUserAvatar {
   username?: string;
 }
 
-export function UserAvatar({ resizeMode, uri, username }: IUserAvatar) {
+export default function UserAvatar({ resizeMode, uri, username }: IUserAvatar) {
   return (
     <Layout>
       {uri ? (

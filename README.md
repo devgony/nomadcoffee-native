@@ -24,3 +24,14 @@
 🎁 Implement dismissible keyboard
 🎁 Hand written logo
 ```
+
+## Day29-Home Tab!(3d)
+
+```
+✅ The Home tab should show all the coffee shops in your Database.
+✅ Infinite Scroll
+✅ Pull to Refresh
+✅ The Coffee Shop component should display the name, photos and categories.
+🎁 OffsetPagination for subfield manually
+🎁 Display address by Google reverse geocode API
+```

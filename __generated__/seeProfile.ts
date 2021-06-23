@@ -9,12 +9,10 @@
 
 export interface seeProfile_seeProfile {
   __typename: "User";
-  id: number;
   username: string;
   email: string;
   name: string;
   location: string;
-  password: string;
   avatarURL: string | null;
   githubUsername: string | null;
 }
