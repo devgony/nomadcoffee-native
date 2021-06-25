@@ -4,7 +4,7 @@ import { Text, View } from "react-native";
 import styled from "styled-components/native";
 import { ScreenProps } from "../types/screen";
 import { seeProfile } from "../__generated__/seeProfile";
-import { UserAvatar } from "../components/UserAvatar";
+import UserAvatar from "../components/UserAvatar";
 import AuthButton from "../components/AuthButton";
 import { logUserOut } from "../apollo";
 

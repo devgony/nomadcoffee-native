@@ -35,3 +35,13 @@
 🎁 OffsetPagination for subfield manually
 🎁 Display address by Google reverse geocode API
 ```
+
+## Day32-Search Tab!(2d)
+
+```
+✅ make the Search tab.
+✅ The Search tab should allow us to search for a Coffee Shop, using the title or the category!
+🎁 Convertable button for searchType: "title" | "category"
+🎁 Search tab with pagination
+🎁 Use cache.evict to implement both offsetLimitPagination and refetch with searching again
+```

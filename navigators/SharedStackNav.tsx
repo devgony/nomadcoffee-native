@@ -6,6 +6,7 @@ import Search from "../screens/Search";
 import Profile from "../screens/Profile";
 import useMe from "../hooks/useMe";
 import { logUserOut } from "../apollo";
+import CoffeeShopScreen from "../screens/CoffeeShopScreen";
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,7 @@ export default function SharedStackNav({ screenName }: ISharedStackNav) {
           {props => <Profile {...props} username={data?.me?.username} isMe />}
         </Stack.Screen>
       ) : null}
+      <Stack.Screen name={"CoffeeShopScreen"} component={CoffeeShopScreen} />
     </Stack.Navigator>
   );
 }

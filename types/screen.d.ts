@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Search;
   Profile;
   Login;
+  CoffeeShopScreen;
 };
 
 export type ScreenProps<RouteName extends keyof RootStackParamList> = {
