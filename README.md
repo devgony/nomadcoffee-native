@@ -45,3 +45,14 @@
 🎁 Search tab with pagination
 🎁 Use cache.evict to implement both offsetLimitPagination and refetch with searching again
 ```
+
+## Day36-Coffe Upload!(7d)
+
+### As a graduation project we are going to build a new tab: Upload!
+
+```
+The user should be able to create a coffe shop from the app.
+The user should be able to pick a photo or photos from the Camera Roll or take a photo using the Camera.
+This means you are going to have to build two screens.
+The Camera should have zoom and flash controls.
+```

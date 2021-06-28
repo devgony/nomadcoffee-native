@@ -4,6 +4,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 export type RootStackParamList = {
   Home;
   Search;
+  Upload;
   Profile;
   Login;
   CoffeeShopScreen;

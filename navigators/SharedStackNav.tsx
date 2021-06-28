@@ -7,6 +7,7 @@ import Profile from "../screens/Profile";
 import useMe from "../hooks/useMe";
 import { logUserOut } from "../apollo";
 import CoffeeShopScreen from "../screens/CoffeeShopScreen";
+import UploadNav from "./UploadNav";
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,9 @@ export default function SharedStackNav({ screenName }: ISharedStackNav) {
       ) : null}
       {screenName === "Search" ? (
         <Stack.Screen name={"Search"} component={Search} />
+      ) : null}
+      {screenName === "Upload" ? (
+        <Stack.Screen name={"Upload"} component={UploadNav} />
       ) : null}
       {screenName === "Profile" ? (
         <Stack.Screen name={"Profile"}>

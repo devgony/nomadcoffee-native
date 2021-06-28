@@ -43,6 +43,22 @@ export default function TabNav({ isLoggedIn }: ITabNav) {
         {() => <SharedStackNav screenName="Search" />}
       </Tabs.Screen>
       <Tabs.Screen
+        name="Upload"
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon
+              iconName={"md-cloud-upload"}
+              color={color}
+              focused={focused}
+            />
+          ),
+        }}
+      >
+        {() =>
+          isLoggedIn ? <SharedStackNav screenName="Upload" /> : <Login />
+        }
+      </Tabs.Screen>
+      <Tabs.Screen
         name="Profile"
         options={{
           tabBarIcon: ({ focused, color }) => (
