@@ -37,7 +37,11 @@ export default function SharedStackNav({ screenName }: ISharedStackNav) {
         <Stack.Screen name={"Search"} component={Search} />
       ) : null}
       {screenName === "Upload" ? (
-        <Stack.Screen name={"Upload"} component={UploadNav} />
+        <Stack.Screen
+          name={"Upload"}
+          component={UploadNav}
+          options={{ headerShown: false }}
+        />
       ) : null}
       {screenName === "Profile" ? (
         <Stack.Screen name={"Profile"}>

@@ -11,7 +11,6 @@ import {
 import ScreenLayout from "../components/ScreenLayout";
 import { RefreshControl } from "react-native";
 import CoffeeShop from "../components/CoffeeShop";
-import useGeo from "../hooks/useGeo";
 
 const SEE_COFFEE_SHOPS = gql`
   query seeCoffeeShops($page: Int!) {

@@ -5,6 +5,8 @@ export type RootStackParamList = {
   Home;
   Search;
   Upload;
+  SelectPhoto;
+  UploadForm;
   Profile;
   Login;
   CoffeeShopScreen;

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Image, useWindowDimensions, View } from "react-native";
+import {
+  TouchableOpacity,
+  Image,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import styled from "styled-components/native";
 import { FlatList } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../colors";
+import { ScreenProps } from "../types/screen";
 
 const Container = styled.View`
   flex: 1;
@@ -28,7 +34,16 @@ const IconContainer = styled.View`
   right: 0px;
 `;
 
-export default function SelectPhoto() {
+const HeaderRightText = styled.Text`
+  color: ${colors.blue};
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 7px;
+`;
+
+export default function SelectPhoto({
+  navigation,
+}: ScreenProps<"SelectPhoto">) {
   const numColumns = 4;
   const { width } = useWindowDimensions();
   const [ok, setOk] = useState(false);
@@ -53,9 +68,25 @@ export default function SelectPhoto() {
       getPhotos();
     }
   };
+  const HeaderRight = () => (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("UploadForm", {
+          file: chosenPhoto,
+        })
+      }
+    >
+      <HeaderRightText>Next</HeaderRightText>
+    </TouchableOpacity>
+  );
   useEffect(() => {
     getPermissions();
   }, []);
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: HeaderRight,
+    });
+  }, [chosenPhoto]);
   const renderItem = ({ item: photo }: { item: MediaLibrary.Asset }) => (
     <ImageContainer onPress={() => setChosenPhoto(photo.uri)}>
       <Image
