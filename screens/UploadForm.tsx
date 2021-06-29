@@ -4,10 +4,11 @@ import styled from "styled-components/native";
 import { colors } from "../colors";
 import DismissKeyboard from "../components/DismissKeyboard";
 import { ScreenProps } from "../types/screen";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useState } from "react";
+import { useRef } from "react";
 
 const Container = styled.View`
   flex: 1;
@@ -76,6 +77,21 @@ export default function UploadForm({
   useEffect(() => {
     register("title");
   }, [register]);
+
+  const mapViewRef = useRef<MapView>(null);
+  const goToInitialLocation = (mapData: ImapData["region"]) => {
+    let initialRegion = Object.assign({}, mapData);
+    initialRegion["latitudeDelta"] = 0.005;
+    initialRegion["longitudeDelta"] = 0.005;
+    mapViewRef.current?.animateToRegion(initialRegion, 2000);
+  };
+  const onRegionChange = (region: Region) => {
+    setMapData(getCurrentAddress => ({
+      ...region,
+      forceRefresh: Math.floor(Math.random() * 100),
+      ...getCurrentAddress, //callback
+    }));
+  };
   return (
     <DismissKeyboard>
       <Container>
@@ -96,7 +112,7 @@ export default function UploadForm({
           fetchDetails={true}
           onPress={(data, details) => {
             // 'details' is provided when fetchDetails = true
-            console.log(data, details);
+            console.log(details);
             setMapData({
               region: {
                 latitudeDelta,
@@ -115,7 +131,15 @@ export default function UploadForm({
             language: "ko",
           }}
         />
-        <MapView style={styles.map} provider={PROVIDER_GOOGLE} {...mapData} />
+        <MapView
+          ref={mapViewRef}
+          onMapReady={() => goToInitialLocation(mapData.region)}
+          initialRegion={mapData.region}
+          onRegionChangeComplete={onRegionChange}
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          {...mapData}
+        />
       </Container>
     </DismissKeyboard>
   );

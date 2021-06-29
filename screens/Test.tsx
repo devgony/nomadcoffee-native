@@ -1,6 +1,5 @@
 import React from "react";
-import {Image,StyleSheet,Text,View,TextInput,TouchableOpacity,
-KeyboardAvoidingView} from "react-native";
+import {Image,StyleSheet,Text,View,TextInput,TouchableOpacity, KeyboardAvoidingView} from "react-native";
 import MapView from "react-native-maps";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 const latitudeDelta = 0.025;
@@ -57,8 +56,7 @@ render() {
      <View style={styles.map}>
        <MapView
          ref={(ref) => (this.mapView = ref)}
-         onMapReady={() =>
-         this.goToInitialLocation(this.state.region)}
+         onMapReady={() => this.goToInitialLocation(this.state.region)}
          style={styles.map}
          initialRegion={this.state.region}
          onRegionChangeComplete={this.onRegionChange}
