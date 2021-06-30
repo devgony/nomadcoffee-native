@@ -57,7 +57,6 @@ export default function SelectPhoto({
   const getPermissions = async () => {
     const { accessPrivileges, canAskAgain } =
       await MediaLibrary.getPermissionsAsync();
-    console.log(accessPrivileges, canAskAgain);
     if (["none", "all"].includes(accessPrivileges as string) && canAskAgain) {
       const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync();
       if (accessPrivileges !== "none") {
