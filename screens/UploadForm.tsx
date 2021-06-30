@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import styled from "styled-components/native";
 import { colors } from "../colors";
 import DismissKeyboard from "../components/DismissKeyboard";
@@ -11,7 +11,14 @@ import MapView, {
   PROVIDER_GOOGLE,
   Region,
 } from "react-native-maps";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -19,13 +26,40 @@ import {
 import { useState } from "react";
 import { useRef } from "react";
 import * as Location from "expo-location";
+import { gql, useMutation } from "@apollo/client";
+import {
+  createCoffeeShop,
+  createCoffeeShopVariables,
+} from "../__generated__/createCoffeeShop";
+import { ReactNativeFile } from "apollo-upload-client";
+
+const CREATE_COFFEE_SHOP = gql`
+  mutation createCoffeeShop(
+    $name: String!
+    $latitude: String!
+    $longitude: String!
+    $photos: [Upload]
+    $categories: [String]!
+  ) {
+    createCoffeeShop(
+      name: $name
+      latitude: $latitude
+      longitude: $longitude
+      photos: $photos
+      categories: $categories
+    ) {
+      ok
+      error
+    }
+  }
+`;
 
 const Container = styled.View`
   background-color: black;
   justify-content: space-between;
 `;
 const InputContainer = styled.View`
-  height: 200px;
+  height: 230px;
   padding: 0px 50px;
   z-index: 1;
 `;
@@ -34,13 +68,13 @@ const Photo = styled.Image`
 `;
 const TitleContainer = styled.View`
   margin-top: 30px;
-  margin-bottom: 10px;
 `;
 const Title = styled.TextInput`
   background-color: white;
   color: black;
   padding: 10px 20px;
   border-radius: 100px;
+  margin-bottom: 10px;
 `;
 
 const HeaderRightText = styled.Text`
@@ -66,6 +100,11 @@ interface ImapData {
   forceRefresh?: number;
 }
 
+interface IForm {
+  title: string;
+  category: string;
+}
+
 export default function UploadForm({
   route,
   navigation,
@@ -88,9 +127,44 @@ export default function UploadForm({
     currentLng: "",
     forceRefresh: 0,
   });
-  const { register, handleSubmit, setValue, getValues, watch } = useForm();
-  const onValid = () => {};
-
+  const { register, handleSubmit, setValue, getValues, watch } =
+    useForm<IForm>();
+  const [createCoffeeShop, { data, loading, error }] = useMutation<
+    createCoffeeShop,
+    createCoffeeShopVariables
+  >(CREATE_COFFEE_SHOP);
+  const onValid: SubmitHandler<IForm> = data => {
+    const file = new ReactNativeFile({
+      uri: route.params?.file,
+      name: `1.jpg`,
+      type: "image/jpeg",
+    });
+    createCoffeeShop({
+      variables: {
+        name: data.title,
+        latitude: "" + mapData.region.latitude,
+        longitude: "" + mapData.region.longitude,
+        photos: [file],
+        categories: [data.category],
+      },
+    });
+  };
+  const HeaderRightLoading = () => (
+    <ActivityIndicator size="small" color="white" style={{ marginRight: 10 }} />
+  );
+  useEffect(() => {
+    console.log(watch("title"), watch("category"));
+    if (watch("title") && watch("category")) {
+      navigation.setOptions({
+        headerRight: loading ? HeaderRightLoading : HeaderRight,
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: undefined,
+      });
+    }
+  }, [watch("title") && watch("category"), loading]);
+  const categoryRef = useRef(null);
   const mapViewRef = useRef<MapView>(null);
   const googlePlacesAutocomplete = useRef<GooglePlacesAutocompleteRef>(null);
   const goToInitialLocation = (region: ImapData["region"]) => {
@@ -107,7 +181,8 @@ export default function UploadForm({
     }));
   };
   useEffect(() => {
-    register("title");
+    register("title", { required: true });
+    register("category", { required: true });
   }, [register]);
   useEffect(() => {
     (async () => {
@@ -135,6 +210,14 @@ export default function UploadForm({
   //     console.log("workd");
   //   })();
   // }, [googlePlacesAutocomplete.current]);
+  const onNext = (nextOne: React.RefObject<any>) => {
+    nextOne?.current?.focus();
+  };
+  const HeaderRight = () => (
+    <TouchableOpacity onPress={handleSubmit(onValid)}>
+      <HeaderRightText>Next</HeaderRightText>
+    </TouchableOpacity>
+  );
   return (
     <DismissKeyboard>
       <Container>
@@ -144,18 +227,28 @@ export default function UploadForm({
           )}
           <TitleContainer>
             <Title
-              returnKeyType="done"
+              autoCapitalize="none"
+              returnKeyType="next"
               placeholder="Coffeshop name"
               placeholderTextColor="rgba(0, 0, 0, 0.5)"
-              onSubmitEditing={handleSubmit(onValid)}
+              onSubmitEditing={() => onNext(categoryRef)}
               onChangeText={text => setValue("title", text)}
+            />
+            <Title
+              autoCapitalize="none"
+              ref={categoryRef}
+              returnKeyType="done"
+              placeholder="category"
+              placeholderTextColor="rgba(0, 0, 0, 0.5)"
+              onSubmitEditing={handleSubmit(onValid)}
+              onChangeText={text => setValue("category", text)}
             />
           </TitleContainer>
           <GooglePlacesAutocomplete
             // currentLocation={true}
             ref={googlePlacesAutocomplete}
             styles={{
-              listView: { position: "absolute", zIndex: 9999 },
+              listView: { position: "absolute", zIndex: 9999, top: 50 },
             }}
             placeholder="Search"
             fetchDetails={true}
@@ -196,12 +289,12 @@ export default function UploadForm({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#fff",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height / 2,

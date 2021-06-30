@@ -10,6 +10,8 @@ import {
   offsetLimitPagination,
   relayStylePagination,
 } from "@apollo/client/utilities";
+import { createUploadLink } from "apollo-upload-client";
+import { onError } from "@apollo/client/link/error";
 
 export const isLoggedInVar = makeVar(false);
 export const tokenVar = makeVar("");
@@ -27,9 +29,13 @@ export const logUserOut = async () => {
   tokenVar("");
 };
 
-const httpLink = createHttpLink({
+const uploadHttpLink = createUploadLink({
   uri: "http://localhost:4000/graphql",
 });
+
+// const httpLink = createHttpLink({
+//   uri: "http://localhost:4000/graphql",
+// });
 
 const authLink = setContext((_, { headers }) => {
   return {
@@ -38,6 +44,15 @@ const authLink = setContext((_, { headers }) => {
       token: tokenVar(),
     },
   };
+});
+
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log(`GraphQL Error`, graphQLErrors);
+  }
+  if (networkError) {
+    console.log("Network Error", networkError);
+  }
 });
 
 export const cache = new InMemoryCache({
@@ -63,7 +78,7 @@ export const cache = new InMemoryCache({
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(onErrorLink).concat(uploadHttpLink),
   cache,
 });
 export default client;
