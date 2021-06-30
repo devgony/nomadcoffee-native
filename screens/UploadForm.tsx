@@ -79,8 +79,8 @@ export default function UploadForm({
   }, [register]);
 
   const mapViewRef = useRef<MapView>(null);
-  const goToInitialLocation = (mapData: ImapData["region"]) => {
-    let initialRegion = Object.assign({}, mapData);
+  const goToInitialLocation = (region: ImapData["region"]) => {
+    let initialRegion = Object.assign({}, region);
     initialRegion["latitudeDelta"] = 0.005;
     initialRegion["longitudeDelta"] = 0.005;
     mapViewRef.current?.animateToRegion(initialRegion, 2000);
@@ -138,7 +138,7 @@ export default function UploadForm({
           onRegionChangeComplete={onRegionChange}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
-          {...mapData}
+          // {...mapData}
         />
       </Container>
     </DismissKeyboard>
