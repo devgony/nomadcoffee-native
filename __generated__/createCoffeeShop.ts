@@ -11,6 +11,7 @@ export interface createCoffeeShop_createCoffeeShop {
   __typename: "MutationResponse";
   ok: boolean;
   error: string | null;
+  id: number | null;
 }
 
 export interface createCoffeeShop {

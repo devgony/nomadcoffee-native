@@ -41,7 +41,7 @@ export default function CoffeeShop({
 }: ICoffeeShop) {
   const { width, height } = useWindowDimensions();
   const [address, setAddress] = useState("");
-  // useGeo(+latitude, +longitude).then(addr => setAddress(addr as string));
+  useGeo(+latitude, +longitude).then(addr => setAddress(addr as string));
   return (
     <Container>
       <LineContainer>

@@ -26,7 +26,7 @@ import {
 import { useState } from "react";
 import { useRef } from "react";
 import * as Location from "expo-location";
-import { gql, useMutation } from "@apollo/client";
+import { gql, MutationUpdaterFn, useMutation } from "@apollo/client";
 import {
   createCoffeeShop,
   createCoffeeShopVariables,
@@ -50,6 +50,7 @@ const CREATE_COFFEE_SHOP = gql`
     ) {
       ok
       error
+      id
     }
   }
 `;
@@ -127,12 +128,30 @@ export default function UploadForm({
     currentLng: "",
     forceRefresh: 0,
   });
+  const updateCreateCoffeeShop: MutationUpdaterFn<createCoffeeShop> = (
+    cache,
+    result
+  ) => {
+    if (result.data?.createCoffeeShop?.id) {
+      cache.modify({
+        id: "ROOT_QUERY",
+        fields: {
+          seeCoffeeShops(prev) {
+            return [result.data?.createCoffeeShop, ...prev];
+          },
+        },
+      });
+      navigation.navigate("Home");
+    }
+  };
   const { register, handleSubmit, setValue, getValues, watch } =
     useForm<IForm>();
   const [createCoffeeShop, { data, loading, error }] = useMutation<
     createCoffeeShop,
     createCoffeeShopVariables
-  >(CREATE_COFFEE_SHOP);
+  >(CREATE_COFFEE_SHOP, {
+    update: updateCreateCoffeeShop,
+  });
   const onValid: SubmitHandler<IForm> = data => {
     const file = new ReactNativeFile({
       uri: route.params?.file,
@@ -157,6 +176,7 @@ export default function UploadForm({
     if (watch("title") && watch("category")) {
       navigation.setOptions({
         headerRight: loading ? HeaderRightLoading : HeaderRight,
+        ...(loading && { headerLeft: () => null }),
       });
     } else {
       navigation.setOptions({
