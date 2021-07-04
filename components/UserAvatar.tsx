@@ -2,11 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { ImageResizeMode, ImageSourcePropType } from "react-native";
 import styled from "styled-components/native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 
-const RADIUS = "50px";
-const BORDER_RADIUS = "25px";
+const RADIUS = "40px";
+const BORDER_RADIUS = "20px";
 
-const Layout = styled.View`
+const Layout = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
   margin: 10px 0;
@@ -38,17 +39,25 @@ export const Username = styled.Text`
 interface IUserAvatar {
   resizeMode: ImageResizeMode;
   uri?: string | null;
-  username?: string;
+  username: string;
 }
 
 export default function UserAvatar({ resizeMode, uri, username }: IUserAvatar) {
+  const navigation = useNavigation();
   return (
-    <Layout>
+    <Layout
+      onPress={() => {
+        navigation.navigate("User", {
+          username,
+          isMe: false,
+        });
+      }}
+    >
       {uri ? (
         <SUserAvatar resizeMode={resizeMode} source={{ uri }} />
       ) : (
         <SDefaultAvatar>
-          <Ionicons name={"person"} color={"white"} size={40} />
+          <Ionicons name={"person"} color={"white"} size={30} />
         </SDefaultAvatar>
       )}
       <Username>{username}</Username>

@@ -1,6 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
+import { cache } from "../apollo";
 import TabIcon from "../components/TabIcon";
+import useMe from "../hooks/useMe";
 import Login from "../screens/Login";
 import SharedStackNav from "./SharedStackNav";
 
@@ -11,6 +13,7 @@ interface ITabNav {
 }
 
 export default function TabNav({ isLoggedIn }: ITabNav) {
+  const myName = useMe().data?.me?.username;
   return (
     <Tabs.Navigator
       tabBarOptions={{
@@ -43,6 +46,22 @@ export default function TabNav({ isLoggedIn }: ITabNav) {
         {() => <SharedStackNav screenName="Search" />}
       </Tabs.Screen>
       <Tabs.Screen
+        name="Upload"
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon
+              iconName={"md-cloud-upload"}
+              color={color}
+              focused={focused}
+            />
+          ),
+        }}
+      >
+        {() =>
+          isLoggedIn ? <SharedStackNav screenName="Upload" /> : <Login />
+        }
+      </Tabs.Screen>
+      <Tabs.Screen
         name="Profile"
         options={{
           tabBarIcon: ({ focused, color }) => (
@@ -50,9 +69,14 @@ export default function TabNav({ isLoggedIn }: ITabNav) {
           ),
         }}
       >
-        {() =>
-          isLoggedIn ? <SharedStackNav screenName="Profile" /> : <Login />
-        }
+        {() => {
+          if (isLoggedIn) {
+            // cache.evict({ fieldName: "searchCoffeeShops" });
+            // cache.evict({ fieldName: "searchMyCoffeeShops" });
+            return <SharedStackNav screenName="Profile" myName={myName} />;
+          }
+          return <Login />;
+        }}
       </Tabs.Screen>
     </Tabs.Navigator>
   );

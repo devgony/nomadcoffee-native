@@ -11,34 +11,15 @@ import {
 import ScreenLayout from "../components/ScreenLayout";
 import { RefreshControl } from "react-native";
 import CoffeeShop from "../components/CoffeeShop";
-import useGeo from "../hooks/useGeo";
+import { COFFEE_SHOP_FRAGMENT, SEE_COFFEE_SHOPS_FRAGMENT } from "../fragments";
 
 const SEE_COFFEE_SHOPS = gql`
   query seeCoffeeShops($page: Int!) {
     seeCoffeeShops(page: $page) {
-      coffeeShops {
-        id
-        name
-        latitude
-        longitude
-        user {
-          id
-          name
-          avatarURL
-        }
-        photos {
-          id
-          url
-        }
-        categories {
-          id
-          name
-        }
-        isMine
-      }
-      maxPage
+      ...SeeCoffeeShopsFragment
     }
   }
+  ${SEE_COFFEE_SHOPS_FRAGMENT}
 `;
 
 const Container = styled.View`

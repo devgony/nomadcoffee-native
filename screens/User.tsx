@@ -21,40 +21,9 @@ import {
   searchMyCoffeeShopsVariables,
   searchMyCoffeeShops_searchMyCoffeeShops,
 } from "../__generated__/searchMyCoffeeShops";
+import { SEE_PROFILE } from "./Profile";
 
-export const SEE_PROFILE = gql`
-  query seeProfile($username: String!) {
-    seeProfile(username: $username) {
-      username
-      email
-      name
-      location
-      avatarURL
-      githubUsername
-      # following(page: Int): [User]
-      # followers(page: Int): [User]
-    }
-  }
-`;
-
-const SEARCH_MY_COFFEE_SHOPS = gql`
-  query searchMyCoffeeShops(
-    $searchType: String!
-    $keyword: String!
-    $offset: Int!
-  ) {
-    searchMyCoffeeShops(
-      searchType: $searchType
-      keyword: $keyword
-      offset: $offset
-    ) {
-      ...CoffeeShopFragment
-    }
-  }
-  ${COFFEE_SHOP_FRAGMENT}
-`;
-
-interface IProfile extends ScreenProps<"Profile"> {
+interface IUser extends ScreenProps<"User"> {
   isMe: boolean;
   myName?: string;
 }
@@ -92,8 +61,7 @@ const ButtonWrapper = styled.View`
   margin-bottom: 5%;
 `;
 
-export default function Profile({ route, navigation, isMe, myName }: IProfile) {
-  console.log(route?.params?.username, isMe, myName);
+export default function User({ route, navigation, isMe, myName }: IUser) {
   const searchType = "user";
   const numColumns = 4;
   const { width, height } = useWindowDimensions();
@@ -105,20 +73,19 @@ export default function Profile({ route, navigation, isMe, myName }: IProfile) {
     // nextFetchPolicy: "cache-first",
   });
   const { data: dataSCS, fetchMore } = useQuery<
-    searchMyCoffeeShops,
-    searchMyCoffeeShopsVariables
-  >(SEARCH_MY_COFFEE_SHOPS, {
+    searchCoffeeShops,
+    searchCoffeeShopsVariables
+  >(SEARCH_COFFEE_SHOPS, {
     variables: {
       searchType,
-      keyword: myName as string,
+      keyword: route?.params?.username,
       offset: 0,
     },
   });
-
   const renderItem = ({
     item: coffeeShop,
   }: {
-    item: searchMyCoffeeShops_searchMyCoffeeShops;
+    item: searchCoffeeShops_searchCoffeeShops;
   }) => (
     <TouchableOpacity
       onPress={() =>
@@ -134,6 +101,7 @@ export default function Profile({ route, navigation, isMe, myName }: IProfile) {
     </TouchableOpacity>
   );
   useEffect(() => {
+    cache.evict({ fieldName: "searchCoffeeShops" });
     navigation.setOptions({
       title: isMe ? "My Profile" : route?.params?.username,
     });
@@ -199,13 +167,13 @@ export default function Profile({ route, navigation, isMe, myName }: IProfile) {
             variables: {
               searchType: "user",
               keyword: isMe ? myName : route?.params?.username,
-              offset: dataSCS?.searchMyCoffeeShops?.length as number,
+              offset: dataSCS?.searchCoffeeShops?.length,
             },
           })
         }
         numColumns={numColumns}
         data={
-          dataSCS?.searchMyCoffeeShops as searchMyCoffeeShops_searchMyCoffeeShops[]
+          dataSCS?.searchCoffeeShops as searchCoffeeShops_searchCoffeeShops[]
         }
         keyExtractor={coffeeShop => "CoffeeShop:" + coffeeShop.id}
         renderItem={renderItem}

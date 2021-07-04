@@ -14,6 +14,7 @@ import {
 import styled from "styled-components/native";
 import { cache } from "../apollo";
 import DismissKeyboard from "../components/DismissKeyboard";
+import { COFFEE_SHOP_FRAGMENT } from "../fragments";
 import { ScreenProps } from "../types/screen";
 import {
   searchCoffeeShops,
@@ -21,7 +22,7 @@ import {
   searchCoffeeShops_searchCoffeeShops,
 } from "../__generated__/searchCoffeeShops";
 
-const SEARCH_COFFEE_SHOPS = gql`
+export const SEARCH_COFFEE_SHOPS = gql`
   query searchCoffeeShops(
     $searchType: String!
     $keyword: String!
@@ -32,23 +33,10 @@ const SEARCH_COFFEE_SHOPS = gql`
       keyword: $keyword
       offset: $offset
     ) {
-      id
-      name
-      latitude
-      longitude
-      user {
-        id
-      }
-      photos {
-        id
-        url
-      }
-      categories {
-        id
-      }
-      isMine
+      ...CoffeeShopFragment
     }
   }
+  ${COFFEE_SHOP_FRAGMENT}
 `;
 const MessageContainer = styled.View`
   justify-content: center;
@@ -143,7 +131,7 @@ export default function Search({ navigation }: ScreenProps<"Search">) {
     >
       <Image
         source={{ uri: coffeeShop.photos[0].url as string }}
-        style={{ width: width / numColumns, height: 800 }}
+        style={{ width: width / numColumns, height: 100 }}
       />
     </TouchableOpacity>
   );
